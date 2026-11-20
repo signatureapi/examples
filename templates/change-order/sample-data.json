@@ -1,0 +1,31 @@
+{
+  "changeDate": "2026-11-02",
+  "changeNumber": "2",
+  "contractDate": "2026-09-01",
+  "contractor": {
+    "name": "Acme Corp",
+    "signatory": "Alex Chen",
+    "signatoryTitle": "Head of Operations",
+    "address": "100 Example Street, Springfield"
+  },
+  "client": {
+    "name": "Maria Garcia"
+  },
+  "reason": "The Client asked for an extra storage room and a different flooring.",
+  "changes": [
+    {
+      "description": "Add a storage room",
+      "amount": "3,200"
+    },
+    {
+      "description": "Upgrade flooring to hardwood",
+      "amount": "1,450"
+    }
+  ],
+  "currency": "USD",
+  "originalPrice": "42,000",
+  "changeTotal": "4,650",
+  "newPrice": "46,650",
+  "daysAdded": "10",
+  "newCompletionDate": "2027-01-22"
+}

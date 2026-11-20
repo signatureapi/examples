@@ -1,0 +1,25 @@
+meta {
+  name: List envelopes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/v1/envelopes
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~status: 
+  ~topic: 
+  ~limit: 
+}
+
+docs {
+  Returns a paginated list of envelopes in the current account, sorted by creation date with the most recent envelopes first.
+  
+  Use the `status` parameter to filter by envelope status (e.g., `completed`, `in_progress`). Use the `topic` parameter to filter by a specific topic tag.
+  
+  Results are paginated with a default and maximum limit of 20 envelopes per page. Use the `links.next` and `links.previous` URLs in the response to navigate between pages.
+}

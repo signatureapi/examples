@@ -1,0 +1,23 @@
+{
+  "title": "Consent to Treatment (sample)",
+  "message": "Please review and sign. This is a sample in test mode.",
+  "document": {
+    "key": "main",
+    "filename": "template.docx"
+  },
+  "recipients": [
+    {
+      "type": "signer",
+      "key": "patient",
+      "name": "Jane Doe",
+      "email": "jane.doe@example.com"
+    }
+  ],
+  "places": [
+    {
+      "key": "patient_signs_here",
+      "type": "signature",
+      "recipient_key": "patient"
+    }
+  ]
+}

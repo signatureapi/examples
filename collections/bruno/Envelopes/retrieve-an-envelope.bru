@@ -1,0 +1,19 @@
+meta {
+  name: Retrieve an envelope
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56
+  body: none
+  auth: inherit
+}
+
+docs {
+  Retrieves the full details of an envelope, including its documents, recipients, deliverable, sender information, and captures.
+  
+  Use this endpoint to check the current status of an envelope, retrieve recipient ceremony URLs, or access the deliverable download URL after completion.
+  
+  The response includes all envelope properties regardless of the envelope's current status. Fields that are not yet available (such as `completed_at` for an in-progress envelope) are returned as `null`.
+}

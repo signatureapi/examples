@@ -1,0 +1,138 @@
+{
+  "name": "SignatureAPI: employment contract",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Employment contract\nYour HR system POSTs the new hire to this webhook. The workflow merges the data into the DOCX template and creates an envelope: HR approves, then the employer signs, then the employee.\n\nThe API key in the credential decides test or live mode.",
+        "width": 440,
+        "height": 220
+      },
+      "id": "ae4e6040-430c-5118-b717-be3bdac79fa2",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "employment-contract",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "46b9dde7-5f24-5a6e-be82-ff414ff23767",
+      "name": "New hire",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Builds the envelope from the request your HR system sends to this webhook.\n// Settings: replace with your own values.\nconst TEMPLATE_URL = 'REPLACE_WITH_YOUR_TEMPLATE_URL'; // the stored employment-contract template\nconst EMPLOYER = { name: 'Acme Corp', address: '100 Example Street, Springfield' };\nconst HR_APPROVER = { name: 'Alex Chen', email: 'alex.chen@example.com' };\nconst EMPLOYER_SIGNER = { name: 'John Smith', email: 'john.smith@example.com', title: 'Head of Operations' };\n\nconst input = $input.first().json.body;\nif (!input?.employee?.name || !input?.employee?.email) {\n  throw new Error('The request needs employee.name and employee.email');\n}\n\nconst envelope = {\n  title: `Employment contract: ${input.employee.name}`,\n  message: 'Please review and sign your employment contract.',\n  routing: 'sequential', // recipients act in array order: HR, then employer, then employee\n  metadata: input.reference ? { hr_reference: String(input.reference) } : {},\n  documents: [\n    {\n      key: 'contract',\n      url: TEMPLATE_URL,\n      format: 'docx',\n      data: {\n        city: 'Springfield',\n        contractDate: new Date().toISOString().slice(0, 10),\n        employer: { ...EMPLOYER, signatory: EMPLOYER_SIGNER.name, signatoryTitle: EMPLOYER_SIGNER.title },\n        employee: { name: input.employee.name, address: input.employee.address ?? '' },\n        startDate: input.start_date,\n        jobTitle: input.job_title,\n        hasProbation: Boolean(input.has_probation),\n        probationMonths: String(input.probation_months ?? '3'),\n        weeklyHours: String(input.weekly_hours ?? '40'),\n        currency: input.currency ?? 'USD',\n        salary: String(input.salary),\n        vacationDays: String(input.vacation_days ?? '25'),\n        governingLaw: 'the State of Delaware',\n      },\n      places: [\n        { key: 'employer_signs_here', type: 'signature', recipient_key: 'employer' },\n        { key: 'employee_signs_here', type: 'signature', recipient_key: 'employee' },\n      ],\n    },\n  ],\n  recipients: [\n    { type: 'approver', key: 'hr', ...HR_APPROVER },\n    { type: 'signer', key: 'employer', name: EMPLOYER_SIGNER.name, email: EMPLOYER_SIGNER.email },\n    { type: 'signer', key: 'employee', name: input.employee.name, email: input.employee.email },\n  ],\n};\n\nreturn [{ json: { envelope } }];"
+      },
+      "id": "c11b67d8-d3da-56aa-a58f-87d7dd53fb18",
+      "name": "Build envelope",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.signatureapi.com/v1/envelopes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.envelope) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "d7fe7d7c-0103-5c1e-b054-25aacc9882e8",
+      "name": "Create envelope",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        200,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.statusCode === 201 ? { envelope_id: $json.body.id, status: $json.body.status } : $json.body) }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode === 201 ? 201 : 502 }}"
+        }
+      },
+      "id": "5e47e3d1-f35a-52fe-85bb-a6be90204f77",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "New hire": {
+      "main": [
+        [
+          {
+            "node": "Build envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build envelope": {
+      "main": [
+        [
+          {
+            "node": "Create envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create envelope": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

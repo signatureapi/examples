@@ -1,0 +1,25 @@
+# Dependencies and build output
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+vendor/
+target/
+bin/
+obj/
+.gradle/
+build/
+.next/
+_build/
+deps/
+*.log
+
+# Local secrets: never commit an API key or signing secret
+.env
+.env.*
+!.env.example
+signed-*.pdf
+downloads/
+collections/openapi.json
+out/
+*.class

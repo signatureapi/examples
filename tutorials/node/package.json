@@ -1,0 +1,9 @@
+{
+  "name": "signatureapi-tutorial-node",
+  "private": true,
+  "type": "module",
+  "description": "Node.js tutorial app: send a contract, sign it in an embedded ceremony, track it with verified webhooks.",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node server.mjs", "test": "node --test" },
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "signatureapi-example-saas-order-forms",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI use case: saas-order-forms (Node.js, zero dependencies)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.mjs",
+    "test": "node --test"
+  }
+}

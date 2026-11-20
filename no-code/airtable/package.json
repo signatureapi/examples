@@ -1,0 +1,9 @@
+{
+  "name": "signatureapi-example-airtable",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI from an Airtable automation script (core tested on Node.js)",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test" }
+}

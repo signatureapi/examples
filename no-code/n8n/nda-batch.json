@@ -1,0 +1,131 @@
+{
+  "name": "SignatureAPI: NDA batch",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## NDA batch\nCreates one mutual NDA envelope per row.\n\n**Create envelope** sends at most 5 requests per second (Options > Batching) and retries a failed request after 5 seconds (Settings > Retry On Fail), which stays inside the default rate limit of 10 requests per second.",
+        "width": 460,
+        "height": 240
+      },
+      "id": "4463c8f5-e1de-55ac-ace6-e6f6e03e81ee",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -320
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "05f4488b-6bbb-5f49-8c9a-43098aaf5a56",
+      "name": "Run",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One item per counterparty. Replace this node with your source (a spreadsheet, a database, a CRM).\nreturn [\n  { json: { company: 'Globex Example Ltd', address: '5 Sample Road, Shelbyville', signer_name: 'John Smith', signer_email: 'john.smith@example.com' } },\n  { json: { company: 'Example Partners LLC', address: '9 Test Street, Springfield', signer_name: 'Jane Doe', signer_email: 'jane.doe@example.com' } },\n  { json: { company: 'Sample Holdings Inc', address: '77 Demo Avenue, Shelbyville', signer_name: 'Maria Garcia', signer_email: 'maria.garcia@example.com' } },\n];"
+      },
+      "id": "932a6525-34d7-5e99-be34-263fa37b3270",
+      "name": "Counterparties",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Builds one envelope per counterparty from the mutual NDA template.\nconst TEMPLATE_URL = 'REPLACE_WITH_YOUR_TEMPLATE_URL'; // the stored mutual-nda template\nconst ACME = { name: 'Acme Corp', address: '100 Example Street, Springfield', signatory: 'Alex Chen', signatoryTitle: 'Head of Operations', email: 'alex.chen@example.com' };\n\nreturn $input.all().map(({ json: row }) => ({\n  json: {\n    company: row.company,\n    envelope: {\n      title: `Mutual NDA: ${row.company}`,\n      message: 'Please review and sign the mutual NDA.',\n      routing: 'parallel', // both parties get it at once and sign in any order\n      metadata: { counterparty: row.company },\n      documents: [\n        {\n          key: 'nda',\n          url: TEMPLATE_URL,\n          format: 'docx',\n          data: {\n            effectiveDate: new Date().toISOString().slice(0, 10),\n            partyA: { name: ACME.name, signatory: ACME.signatory, signatoryTitle: ACME.signatoryTitle, address: ACME.address },\n            partyB: { name: row.company, address: row.address, signatory: row.signer_name },\n            purpose: 'a possible business relationship',\n            termYears: '2',\n            survivalYears: '3',\n            governingLaw: 'the State of Delaware',\n          },\n          places: [\n            { key: 'party_a_signs_here', type: 'signature', recipient_key: 'party_a' },\n            { key: 'party_b_signs_here', type: 'signature', recipient_key: 'party_b' },\n          ],\n        },\n      ],\n      recipients: [\n        { type: 'signer', key: 'party_a', name: ACME.signatory, email: ACME.email },\n        { type: 'signer', key: 'party_b', name: row.signer_name, email: row.signer_email },\n      ],\n    },\n  },\n}));"
+      },
+      "id": "e8ccb625-fcc4-5b5e-af38-686f5188c711",
+      "name": "Build envelopes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.signatureapi.com/v1/envelopes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.envelope) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 1000
+            }
+          }
+        }
+      },
+      "id": "3c47bc77-2733-5e78-a765-eb10780ead1d",
+      "name": "Create envelope",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Run": {
+      "main": [
+        [
+          {
+            "node": "Counterparties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Counterparties": {
+      "main": [
+        [
+          {
+            "node": "Build envelopes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build envelopes": {
+      "main": [
+        [
+          {
+            "node": "Create envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Retrieve a deliverable
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/v1/deliverables/{{deliverable_id}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  Retrieves the details of a deliverable, including its current status and download URL.
+  
+  When the deliverable status is `generated`, the response includes a `url` field with a download link. By default, this is a pre-signed URL that expires after 1 hour. Call this endpoint again to get a fresh URL if the previous one has expired.
+}

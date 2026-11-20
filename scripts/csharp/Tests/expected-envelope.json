@@ -1,0 +1,14 @@
+{
+  "title": "Service Agreement",
+  "message": "Hi, please review and sign the Acme Corp Service Agreement.",
+  "metadata": {},
+  "documents": [
+    {
+      "url": "https://pub-9cb75390636c4a8a83a6f76da33d7f45.r2.dev/docs-samples/service-agreement.pdf",
+      "format": "pdf",
+      "places": [{ "key": "client_signature", "type": "signature", "recipient_key": "client" }],
+      "fixed_positions": [{ "place_key": "client_signature", "page": 1, "top": 172, "left": 210 }]
+    }
+  ],
+  "recipients": [{ "key": "client", "type": "signer", "name": "Jane Doe", "email": "jane.doe@example.com" }]
+}

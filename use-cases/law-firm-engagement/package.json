@@ -1,0 +1,14 @@
+{
+  "name": "signatureapi-example-law-firm-engagement",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI use case: law-firm-engagement (Node.js, zero dependencies)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.mjs",
+    "test": "node --test"
+  }
+}

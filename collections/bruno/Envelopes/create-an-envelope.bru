@@ -1,0 +1,62 @@
+meta {
+  name: Create an envelope
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/v1/envelopes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "Service Agreement",
+    "message": "Hi, please review and sign the Acme Corp Service Agreement.",
+    "metadata": {
+      "customer_ref": "ACME-1001"
+    },
+    "documents": [
+      {
+        "url": "https://pub-9cb75390636c4a8a83a6f76da33d7f45.r2.dev/docs-samples/service-agreement.pdf",
+        "format": "pdf",
+        "places": [
+          {
+            "key": "client_signature",
+            "type": "signature",
+            "recipient_key": "client"
+          }
+        ],
+        "fixed_positions": [
+          {
+            "place_key": "client_signature",
+            "page": 1,
+            "top": 172,
+            "left": 210
+          }
+        ]
+      }
+    ],
+    "recipients": [
+      {
+        "key": "client",
+        "type": "signer",
+        "name": "Jane Doe",
+        "email": "jane.doe@example.com"
+      }
+    ]
+  }
+}
+
+docs {
+  Creates a new envelope and starts the signing process. The envelope begins in `processing` status while documents are validated and prepared, then transitions to `in_progress` once recipients are notified.
+  
+  At minimum, you must provide a `title`, at least one `document`, and at least one `recipient`. All other fields are optional and have sensible defaults.
+  
+  Documents must be publicly accessible PDF or DOCX files. Each document can include interactive elements (places) such as signature fields, text inputs, and checkboxes.
+  
+  By default, recipients receive the envelope sequentially in the order listed. Set `routing` to `parallel` to send to all recipients at the same time.
+  
+  A `standard` deliverable (signed documents plus audit log) is generated automatically upon completion. You can customize the deliverable type, password-protect it, or select which documents to include.
+}

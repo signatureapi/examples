@@ -1,0 +1,21 @@
+meta {
+  name: List deliverables
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56/deliverables
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~limit: 
+}
+
+docs {
+  Returns a list of deliverables for an envelope. Each envelope has at least one deliverable created automatically when the envelope completes. Additional deliverables may exist if created via the Create Deliverable endpoint.
+  
+  The deliverables are sorted chronologically by creation date, with the earliest created deliverable appearing first.
+}

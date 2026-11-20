@@ -1,0 +1,19 @@
+{
+  "leaseDate": "2026-11-02",
+  "landlord": {
+    "name": "Alex Chen"
+  },
+  "tenant": {
+    "name": "Maria Garcia"
+  },
+  "property": {
+    "address": "42 Sample Avenue, Apartment 3B, Springfield"
+  },
+  "startDate": "2026-12-01",
+  "endDate": "2027-11-30",
+  "currency": "USD",
+  "monthlyRent": "1,800",
+  "dueDay": "1",
+  "deposit": "1,800",
+  "petsAllowed": false
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Retrieve an upload
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/v1/uploads/{{upload_id}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  Retrieves the metadata of an existing upload. Returns details such as the file format, size, SHA-256 hash, and retention type.
+  
+  This endpoint returns upload metadata only. The file content cannot be downloaded through the API.
+}

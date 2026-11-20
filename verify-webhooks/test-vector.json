@@ -1,0 +1,66 @@
+{
+  "description": "Fixed Standard Webhooks test vector for SignatureAPI examples. The secret is a public test value, not a real signing secret.",
+  "secret": "whsec_c2lnbmF0dXJlYXBpLWV4YW1wbGVzLXRlc3Qtc2VjcmV0",
+  "now": 1793632930,
+  "tolerance_seconds": 300,
+  "cases": [
+    {
+      "name": "valid",
+      "headers": {
+        "webhook-id": "msg_2pVb7Kq9Xc4Lm8Rt",
+        "webhook-timestamp": "1793632900",
+        "webhook-signature": "v1,elcAoHJiibr4sA1hP6uJJrwZZn7ko+mM7ldymF80RxY="
+      },
+      "body": "{\"id\":\"evt_7fK2mQ9xLp4RtV8nWc3Yb1\",\"type\":\"envelope.completed\",\"timestamp\":\"2026-11-02T15:21:40.000Z\",\"data\":{\"envelope_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"envelope_metadata\":{\"customer_ref\":\"ACME-1001\"},\"object_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"object_type\":\"envelope\"}}",
+      "expect": "valid"
+    },
+    {
+      "name": "valid_with_multiple_signatures",
+      "headers": {
+        "webhook-id": "msg_2pVb7Kq9Xc4Lm8Rt",
+        "webhook-timestamp": "1793632900",
+        "webhook-signature": "v1,eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHg= v1,elcAoHJiibr4sA1hP6uJJrwZZn7ko+mM7ldymF80RxY="
+      },
+      "body": "{\"id\":\"evt_7fK2mQ9xLp4RtV8nWc3Yb1\",\"type\":\"envelope.completed\",\"timestamp\":\"2026-11-02T15:21:40.000Z\",\"data\":{\"envelope_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"envelope_metadata\":{\"customer_ref\":\"ACME-1001\"},\"object_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"object_type\":\"envelope\"}}",
+      "expect": "valid"
+    },
+    {
+      "name": "tampered_body",
+      "headers": {
+        "webhook-id": "msg_2pVb7Kq9Xc4Lm8Rt",
+        "webhook-timestamp": "1793632900",
+        "webhook-signature": "v1,elcAoHJiibr4sA1hP6uJJrwZZn7ko+mM7ldymF80RxY="
+      },
+      "body": "{\"id\":\"evt_7fK2mQ9xLp4RtV8nWc3Yb1\",\"type\":\"envelope.completed\",\"timestamp\":\"2026-11-02T15:21:40.000Z\",\"data\":{\"envelope_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"envelope_metadata\":{\"customer_ref\":\"ACME-9999\"},\"object_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"object_type\":\"envelope\"}}",
+      "expect": "invalid"
+    },
+    {
+      "name": "wrong_secret_signature",
+      "headers": {
+        "webhook-id": "msg_2pVb7Kq9Xc4Lm8Rt",
+        "webhook-timestamp": "1793632900",
+        "webhook-signature": "v1,1eA/WxeyTCtoSYB23FwGcpOQrztaUCIOOklzeq4roRc="
+      },
+      "body": "{\"id\":\"evt_7fK2mQ9xLp4RtV8nWc3Yb1\",\"type\":\"envelope.completed\",\"timestamp\":\"2026-11-02T15:21:40.000Z\",\"data\":{\"envelope_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"envelope_metadata\":{\"customer_ref\":\"ACME-1001\"},\"object_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"object_type\":\"envelope\"}}",
+      "expect": "invalid"
+    },
+    {
+      "name": "timestamp_too_old",
+      "headers": {
+        "webhook-id": "msg_2pVb7Kq9Xc4Lm8Rt",
+        "webhook-timestamp": "1793632300",
+        "webhook-signature": "v1,QLMpGdGJpOLcG5WD8Xtvggkz9Ed4orw0k7wQKm/Dm5o="
+      },
+      "body": "{\"id\":\"evt_7fK2mQ9xLp4RtV8nWc3Yb1\",\"type\":\"envelope.completed\",\"timestamp\":\"2026-11-02T15:21:40.000Z\",\"data\":{\"envelope_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"envelope_metadata\":{\"customer_ref\":\"ACME-1001\"},\"object_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"object_type\":\"envelope\"}}",
+      "expect": "invalid"
+    },
+    {
+      "name": "missing_headers",
+      "headers": {
+        "webhook-id": "msg_2pVb7Kq9Xc4Lm8Rt"
+      },
+      "body": "{\"id\":\"evt_7fK2mQ9xLp4RtV8nWc3Yb1\",\"type\":\"envelope.completed\",\"timestamp\":\"2026-11-02T15:21:40.000Z\",\"data\":{\"envelope_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"envelope_metadata\":{\"customer_ref\":\"ACME-1001\"},\"object_id\":\"eb4cf433-a8af-4161-b37b-7ef57d423e56\",\"object_type\":\"envelope\"}}",
+      "expect": "invalid"
+    }
+  ]
+}

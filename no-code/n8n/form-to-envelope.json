@@ -1,0 +1,157 @@
+{
+  "name": "SignatureAPI: form to envelope",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Form to envelope\nAn n8n form for your team. Each submission merges the answers into the offer letter template and sends it to the candidate.",
+        "width": 420,
+        "height": 180
+      },
+      "id": "1c56636f-2c45-5e87-803b-fdb9862dccbc",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "Send an offer letter",
+        "formDescription": "The candidate gets an email with a link to sign.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Candidate name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Candidate email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Position",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Start date",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Salary",
+              "placeholder": "USD 72,000",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "path": "offer-letter"
+        }
+      },
+      "id": "98bad11b-a5a0-5d28-9d02-03d0d967adcb",
+      "name": "Offer letter form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Builds an offer letter envelope from the form answers.\n// The template's merge fields are candidateName, position, startDate and salary; its placeholder is [[candidate_signs_here]].\nconst TEMPLATE_URL = 'https://pub-9cb75390636c4a8a83a6f76da33d7f45.r2.dev/docs-samples/acme-offer-letter-template.docx';\nconst a = $input.first().json;\n\nconst envelope = {\n  title: `Offer letter: ${a['Candidate name']}`,\n  message: 'Please review and sign your offer letter.',\n  documents: [\n    {\n      key: 'offer',\n      url: TEMPLATE_URL,\n      format: 'docx',\n      data: { candidateName: a['Candidate name'], position: a['Position'], startDate: a['Start date'], salary: a['Salary'] },\n      places: [{ key: 'candidate_signs_here', type: 'signature', recipient_key: 'candidate' }],\n    },\n  ],\n  recipients: [{ type: 'signer', key: 'candidate', name: a['Candidate name'], email: a['Candidate email'] }],\n};\n\nreturn [{ json: { envelope } }];"
+      },
+      "id": "79873633-cb88-5d90-9bee-df7ad2aef8b4",
+      "name": "Build envelope",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.signatureapi.com/v1/envelopes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.envelope) }}",
+        "options": {}
+      },
+      "id": "036f3323-6457-517d-b0d9-2c2894f14dbb",
+      "name": "Create envelope",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        200,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Offer letter sent",
+        "completionMessage": "=Envelope {{ $json.id }} was created with status {{ $json.status }}.",
+        "options": {}
+      },
+      "id": "8c35e3e8-9d74-593c-80dd-fd3127b90771",
+      "name": "Confirmation",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        420,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Offer letter form": {
+      "main": [
+        [
+          {
+            "node": "Build envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build envelope": {
+      "main": [
+        [
+          {
+            "node": "Create envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create envelope": {
+      "main": [
+        [
+          {
+            "node": "Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

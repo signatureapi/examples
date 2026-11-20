@@ -1,0 +1,17 @@
+{
+  "agreementDate": "2026-11-02",
+  "seller": {
+    "name": "Acme Corp"
+  },
+  "buyer": {
+    "name": "John Smith"
+  },
+  "itemDescription": "One standing desk, model SD-200, in oak finish",
+  "currency": "USD",
+  "price": "650",
+  "deposit": "100",
+  "deliveryAddress": "8 Example Court, Capital City",
+  "deliveryDate": "2026-12-10",
+  "hasWarranty": true,
+  "warrantyMonths": "12"
+}

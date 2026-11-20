@@ -1,0 +1,14 @@
+{
+  "name": "signatureapi-example-hr-offer-letters",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI use case: hr-offer-letters (Node.js, zero dependencies)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.mjs",
+    "test": "node --test"
+  }
+}

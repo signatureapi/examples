@@ -1,0 +1,34 @@
+{
+  "title": "Statement of Work (sample)",
+  "message": "Please review and sign. This is a sample in test mode.",
+  "document": {
+    "key": "main",
+    "filename": "template.docx"
+  },
+  "recipients": [
+    {
+      "type": "signer",
+      "key": "provider",
+      "name": "Alex Chen",
+      "email": "alex.chen@example.com"
+    },
+    {
+      "type": "signer",
+      "key": "client",
+      "name": "Jane Doe",
+      "email": "jane.doe@example.com"
+    }
+  ],
+  "places": [
+    {
+      "key": "provider_signs_here",
+      "type": "signature",
+      "recipient_key": "provider"
+    },
+    {
+      "key": "client_signs_here",
+      "type": "signature",
+      "recipient_key": "client"
+    }
+  ]
+}

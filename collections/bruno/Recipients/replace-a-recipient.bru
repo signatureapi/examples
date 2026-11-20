@@ -1,0 +1,26 @@
+meta {
+  name: Replace a recipient
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/v1/recipients/{{recipient_id}}/replace
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "John Smith",
+    "email": "john.smith@example.com"
+  }
+}
+
+docs {
+  Replaces a recipient with a new person. The original recipient's status changes to `replaced`, and a new recipient is created with the provided name and email.
+  
+  Use this when a recipient can no longer complete the envelope, for example, after a hard bounce or if the wrong person was assigned.
+  
+  Recipients can be replaced as long as they have not completed yet and the envelope status is `processing` or `in_progress`. The new recipient inherits the original recipient's type, key, routing position, and assigned places.
+}

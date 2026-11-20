@@ -1,0 +1,34 @@
+{
+  "title": "Residential Lease (sample)",
+  "message": "Please review and sign. This is a sample in test mode.",
+  "document": {
+    "key": "main",
+    "filename": "template.docx"
+  },
+  "recipients": [
+    {
+      "type": "signer",
+      "key": "landlord",
+      "name": "Alex Chen",
+      "email": "alex.chen@example.com"
+    },
+    {
+      "type": "signer",
+      "key": "tenant",
+      "name": "Maria Garcia",
+      "email": "maria.garcia@example.com"
+    }
+  ],
+  "places": [
+    {
+      "key": "landlord_signs_here",
+      "type": "signature",
+      "recipient_key": "landlord"
+    },
+    {
+      "key": "tenant_signs_here",
+      "type": "signature",
+      "recipient_key": "tenant"
+    }
+  ]
+}

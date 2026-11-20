@@ -1,0 +1,12 @@
+{
+  "waiverDate": "2026-11-02",
+  "activityName": "the Saturday trail ride",
+  "activityDate": "2026-11-14",
+  "organizer": {
+    "name": "Acme Outdoor Club"
+  },
+  "participant": {
+    "name": "John Smith"
+  },
+  "providesEquipment": true
+}

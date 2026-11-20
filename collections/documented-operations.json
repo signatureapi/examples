@@ -1,0 +1,27 @@
+{
+  "description": "Operations the public SignatureAPI docs document today. Replace with the website export (documented-today.json) when it is available; the generator accepts either shape.",
+  "operations": [
+    "CancelEnvelope",
+    "CreateDeliverable",
+    "CreateEnvelope",
+    "CreateRecipientCeremony",
+    "CreateSender",
+    "CreateUpload",
+    "DeleteEnvelope",
+    "DeleteSender",
+    "GetDeliverable",
+    "GetEnvelope",
+    "GetRecipient",
+    "GetSender",
+    "GetUpload",
+    "ListEnvelopeDeliverables",
+    "ListEnvelopeEvents",
+    "ListEnvelopes",
+    "ListEvents",
+    "ListRecipientEvents",
+    "ReplaceRecipient",
+    "ResendRequest",
+    "StoreUpload",
+    "UpdateEnvelope"
+  ]
+}

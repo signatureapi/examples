@@ -1,0 +1,14 @@
+{
+  "name": "signatureapi-example-construction-change-orders",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI use case: construction-change-orders (Node.js, zero dependencies)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.mjs",
+    "test": "node --test"
+  }
+}

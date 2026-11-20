@@ -1,0 +1,21 @@
+{
+  "effectiveDate": "2026-11-02",
+  "company": {
+    "name": "Acme Corp",
+    "signatory": "Alex Chen",
+    "signatoryTitle": "Head of Operations",
+    "address": "100 Example Street, Springfield"
+  },
+  "contractor": {
+    "name": "John Smith",
+    "address": "8 Example Court, Capital City"
+  },
+  "services": "website design and front-end development",
+  "isHourly": true,
+  "hourlyRate": "95",
+  "fixedFee": "12,000",
+  "currency": "USD",
+  "paymentDays": "30",
+  "endDate": "2027-02-28",
+  "noticeDays": "14"
+}

@@ -1,0 +1,12 @@
+{
+  "consentDate": "2026-11-02",
+  "clinic": {
+    "name": "Acme Wellness Clinic",
+    "address": "7 Sample Plaza, Springfield"
+  },
+  "patient": {
+    "name": "Jane Doe"
+  },
+  "visitDescription": "a routine annual checkup",
+  "isMinor": false
+}

@@ -1,0 +1,21 @@
+{
+  "offerDate": "2026-11-02",
+  "employer": {
+    "name": "Acme Corp",
+    "signatory": "Alex Chen",
+    "signatoryTitle": "Head of Operations",
+    "address": "100 Example Street, Springfield"
+  },
+  "candidate": {
+    "name": "Jane Doe"
+  },
+  "jobTitle": "Product Designer",
+  "department": "Design",
+  "manager": "John Smith",
+  "startDate": "2026-12-01",
+  "currency": "USD",
+  "salary": "85,000",
+  "hasSignOnBonus": true,
+  "signOnBonus": "3,000",
+  "offerExpiry": "2026-11-16"
+}

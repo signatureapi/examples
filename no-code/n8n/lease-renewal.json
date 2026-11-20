@@ -1,0 +1,136 @@
+{
+  "name": "SignatureAPI: lease renewal",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Lease renewal\nEvery morning, finds the leases that end in the next 60 days and sends each tenant a renewal for a new one-year term. The tenant signs, then the landlord countersigns.",
+        "width": 440,
+        "height": 200
+      },
+      "id": "8cdcc743-cd38-5c11-b440-8f093fc9dfa8",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "ddcbe88b-a13f-5cbe-81fa-c12e18fed12d",
+      "name": "Every morning",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Leases from your property system. Replace this node with your source.\n// The next node keeps the leases that end in the next 60 days.\nconst inDays = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);\nreturn [\n  { json: { unit: '42 Sample Avenue, Apartment 3B, Springfield', tenant_name: 'Maria Garcia', tenant_email: 'maria.garcia@example.com', current_end: inDays(45), monthly_rent: '1,850', deposit: '1,800', pets_allowed: false } },\n  { json: { unit: '42 Sample Avenue, Apartment 5A, Springfield', tenant_name: 'Jane Doe', tenant_email: 'jane.doe@example.com', current_end: inDays(200), monthly_rent: '2,100', deposit: '2,000', pets_allowed: true } },\n];"
+      },
+      "id": "cdf4d26a-259e-5da0-b471-b8bcfbc779b7",
+      "name": "Leases",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Keeps the leases ending in the next 60 days and builds a renewal envelope for each.\nconst TEMPLATE_URL = 'REPLACE_WITH_YOUR_TEMPLATE_URL'; // the stored residential-lease template\nconst LANDLORD = { name: 'Alex Chen', email: 'alex.chen@example.com' };\nconst DAY = 86400000;\n\nconst due = $input.all().filter(({ json: l }) => {\n  const days = (new Date(l.current_end) - Date.now()) / DAY;\n  return days >= 0 && days <= 60;\n});\n\nreturn due.map(({ json: lease }) => {\n  const start = new Date(new Date(lease.current_end).getTime() + DAY);\n  const end = new Date(start);\n  end.setFullYear(end.getFullYear() + 1);\n  end.setDate(end.getDate() - 1);\n  const iso = (d) => d.toISOString().slice(0, 10);\n  return {\n    json: {\n      unit: lease.unit,\n      envelope: {\n        title: `Lease renewal: ${lease.unit}`,\n        message: 'Your lease renewal is ready to sign.',\n        routing: 'sequential', // the tenant signs first, then the landlord countersigns\n        metadata: { unit: lease.unit.slice(0, 1000) },\n        documents: [\n          {\n            key: 'lease',\n            url: TEMPLATE_URL,\n            format: 'docx',\n            data: {\n              leaseDate: iso(new Date()),\n              landlord: { name: LANDLORD.name },\n              tenant: { name: lease.tenant_name },\n              property: { address: lease.unit },\n              startDate: iso(start),\n              endDate: iso(end),\n              currency: 'USD',\n              monthlyRent: lease.monthly_rent,\n              dueDay: '1',\n              deposit: lease.deposit,\n              petsAllowed: Boolean(lease.pets_allowed),\n            },\n            places: [\n              { key: 'tenant_signs_here', type: 'signature', recipient_key: 'tenant' },\n              { key: 'landlord_signs_here', type: 'signature', recipient_key: 'landlord' },\n            ],\n          },\n        ],\n        recipients: [\n          { type: 'signer', key: 'tenant', name: lease.tenant_name, email: lease.tenant_email },\n          { type: 'signer', key: 'landlord', name: LANDLORD.name, email: LANDLORD.email },\n        ],\n      },\n    },\n  };\n});"
+      },
+      "id": "05186e09-6043-502b-a59a-4ae47d159bf6",
+      "name": "Build renewals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.signatureapi.com/v1/envelopes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.envelope) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 1000
+            }
+          }
+        }
+      },
+      "id": "d62744e5-c456-5390-9de1-f4e660280d13",
+      "name": "Create envelope",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every morning": {
+      "main": [
+        [
+          {
+            "node": "Leases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leases": {
+      "main": [
+        [
+          {
+            "node": "Build renewals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build renewals": {
+      "main": [
+        [
+          {
+            "node": "Create envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

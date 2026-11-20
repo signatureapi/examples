@@ -1,0 +1,18 @@
+{
+  "effectiveDate": "2026-11-02",
+  "partyA": {
+    "name": "Acme Corp",
+    "signatory": "Alex Chen",
+    "signatoryTitle": "Head of Operations",
+    "address": "100 Example Street, Springfield"
+  },
+  "partyB": {
+    "name": "Globex Example Ltd",
+    "address": "5 Sample Road, Shelbyville",
+    "signatory": "John Smith"
+  },
+  "purpose": "a possible software partnership",
+  "termYears": "2",
+  "survivalYears": "3",
+  "governingLaw": "the State of Delaware"
+}

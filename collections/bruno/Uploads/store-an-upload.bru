@@ -1,0 +1,21 @@
+meta {
+  name: Store an upload
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/v1/uploads/{{upload_id}}/store
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "key": "service-agreement-v1"
+  }
+}
+
+docs {
+  Converts a temporary upload into a permanent upload. The file is moved to permanent storage and will no longer expire. A unique `key` is required to identify the permanent upload.
+}

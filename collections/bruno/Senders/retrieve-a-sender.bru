@@ -1,0 +1,15 @@
+meta {
+  name: Retrieve a Sender
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/v1/senders/{{sender_id}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  Retrieves the details of a sender. Use this endpoint to check the current verification status of a sender after creation.
+}

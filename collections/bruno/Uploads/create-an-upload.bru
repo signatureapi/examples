@@ -1,0 +1,33 @@
+meta {
+  name: Create an Upload
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/v1/uploads
+  body: file
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/pdf
+}
+
+docs {
+  Uploads a file to SignatureAPI for use as a document source in an envelope.
+  
+  The upload is **temporary** and automatically deleted after **24 hours**. Send the raw file bytes in the request body with the appropriate `Content-Type` header. Maximum file size: **4.5 MB**.
+  
+  The response includes a `url` field that can be used anywhere a file URL is accepted, such as in the `document.url` field when adding documents to an envelope.
+  
+  To store a **permanent file** that can be reused, use the [Store Upload](/docs/v1/store-upload) endpoint or the file library in your dashboard.
+  
+  **Accepted media types:**
+  
+  | Media Type                                                                | Format |
+  |---------------------------------------------------------------------------|--------|
+  | `application/pdf`                                                         | `pdf`  |
+  | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` | `docx` |
+  | `image/png`                                                               | `png`  |
+}

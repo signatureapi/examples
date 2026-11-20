@@ -1,0 +1,19 @@
+{
+  "effectiveDate": "2026-11-02",
+  "provider": {
+    "name": "Acme Corp",
+    "signatory": "Alex Chen",
+    "signatoryTitle": "Head of Operations",
+    "address": "100 Example Street, Springfield"
+  },
+  "client": {
+    "name": "Globex Example Ltd",
+    "signatory": "Jane Doe"
+  },
+  "paymentDays": "30",
+  "lateFeePercent": "1",
+  "confidentialityYears": "3",
+  "termMonths": "12",
+  "noticeDays": "60",
+  "governingLaw": "the State of Delaware"
+}

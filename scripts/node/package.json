@@ -1,0 +1,15 @@
+{
+  "name": "signatureapi-scripts-node",
+  "private": true,
+  "type": "module",
+  "description": "Send, track and download SignatureAPI envelopes from Node.js with zero dependencies.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "send": "node send-envelope.mjs",
+    "status": "node get-status.mjs",
+    "download": "node download-deliverable.mjs",
+    "bulk": "node bulk-send-csv.mjs signers.csv",
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

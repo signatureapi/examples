@@ -1,0 +1,25 @@
+meta {
+  name: Cancel an envelope
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56/cancel
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "reason": "Superseded by a new version of the agreement"
+  }
+}
+
+docs {
+  Cancels an envelope, immediately halting all signing activity. This action is irreversible and permanent.
+  
+  Only envelopes with status `in_progress` can be canceled. Once canceled, the envelope's status changes to `canceled` and recipients can no longer access the signing ceremony.
+  
+  An optional `reason` can be provided for internal tracking. The reason is included in the `envelope.canceled` webhook event but is not shown to recipients.
+}

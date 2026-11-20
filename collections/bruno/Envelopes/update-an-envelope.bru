@@ -1,0 +1,23 @@
+meta {
+  name: Update an envelope
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "label": "Acme Corp renewal 2026"
+  }
+}
+
+docs {
+  Updates an envelope by setting the values of the parameters passed. Any parameters not provided are left unchanged.
+  
+  Currently, only the `label` parameter can be updated. The label is for internal use only and is not shown to recipients. You can update the label regardless of the envelope's status.
+}

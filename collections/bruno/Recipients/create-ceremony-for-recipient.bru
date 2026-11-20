@@ -1,0 +1,29 @@
+meta {
+  name: Create ceremony for recipient
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/v1/recipients/{{recipient_id}}/ceremonies
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "authentication": [
+      {
+        "type": "email_code"
+      }
+    ]
+  }
+}
+
+docs {
+  Creates a new ceremony for the recipient. Any previous active ceremony for this recipient is automatically revoked.
+  
+  Use this endpoint to create a ceremony after the envelope has been created, or to replace an existing ceremony with different authentication settings.
+  
+  The response includes the ceremony configuration and, when applicable, the ceremony URL. The **first** authentication method decides this: the `url` property is populated when the first method is `email_code` or `custom`. When the first method is `email_link`, SignatureAPI delivers the URL by email and the `url` property is `null`, including when another method such as `email_code` follows it.
+}

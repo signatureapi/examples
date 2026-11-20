@@ -1,0 +1,12 @@
+{
+  "name": "signatureapi-collections",
+  "private": true,
+  "type": "module",
+  "description": "Postman, Bruno, Insomnia and HTTPie collections for SignatureAPI, generated from the OpenAPI spec.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "generate": "node generate.mjs --bundle openapi.json",
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

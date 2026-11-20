@@ -1,0 +1,27 @@
+meta {
+  name: Resend Request To Recipient
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/v1/recipients/{{recipient_id}}/resend
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "subject_override": "Reminder: please sign the Service Agreement"
+  }
+}
+
+docs {
+  Resends the invitation email to a recipient who has not yet completed the envelope.
+  
+  The request can be resent when the recipient status is `sent` or `soft_bounced` and the envelope status is `in_progress`.
+  
+  The response includes a `can_resend_at` timestamp that indicates when the next resend is allowed. You must wait until after this time before resending again.
+  
+  You can optionally customize the email subject and message for this specific resend. If not provided, the original subject and message are used.
+}

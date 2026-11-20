@@ -1,0 +1,138 @@
+{
+  "name": "SignatureAPI: invoice approval",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Invoice approval\nYour accounting system POSTs an invoice to this webhook. The workflow creates an envelope where a manager approves the invoice first, then finance signs it off. A rejection at either step sends `recipient.rejected`.",
+        "width": 440,
+        "height": 220
+      },
+      "id": "232c24fb-0e0d-56a4-9951-cc30a6eb8dd4",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "invoice-approval",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "4cac77a6-d09e-51ad-8b92-30540cf01a2d",
+      "name": "New invoice",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Builds an approval envelope for the invoice your accounting system sends to this webhook.\n// Request body: invoice_number, vendor, amount, currency, pdf_url (a URL SignatureAPI can fetch, such as an upload URL),\n// approver { name, email } who reviews it, and signer { name, email } who signs it off.\nconst input = $input.first().json.body;\nfor (const field of ['invoice_number', 'vendor', 'amount', 'currency', 'pdf_url']) {\n  if (!input?.[field]) throw new Error(`The request needs ${field}`);\n}\nfor (const person of ['approver', 'signer']) {\n  if (!input[person]?.name || !input[person]?.email) throw new Error(`The request needs ${person}.name and ${person}.email`);\n}\n\nconst envelope = {\n  title: `Invoice ${input.invoice_number} from ${input.vendor}: ${input.currency} ${input.amount}`,\n  message: 'Please review this invoice.',\n  routing: 'sequential', // the approver reviews first; the signer gets it only after approval\n  topics: ['invoices'],\n  metadata: { invoice_number: String(input.invoice_number) },\n  documents: [\n    {\n      key: 'invoice',\n      url: input.pdf_url,\n      format: 'pdf',\n      places: [{ key: 'signoff', type: 'signature', recipient_key: 'signer' }],\n      fixed_positions: [{ place_key: 'signoff', page: 1, top: 680, left: 72 }],\n    },\n  ],\n  recipients: [\n    { type: 'approver', key: 'approver', name: input.approver.name, email: input.approver.email },\n    { type: 'signer', key: 'signer', name: input.signer.name, email: input.signer.email },\n  ],\n};\n\nreturn [{ json: { envelope } }];"
+      },
+      "id": "52f8cc73-41eb-5b06-8e2a-6a44efbc87bd",
+      "name": "Build envelope",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.signatureapi.com/v1/envelopes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.envelope) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "62e7be8f-be2e-516c-8191-216c4d85e30f",
+      "name": "Create envelope",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        200,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.statusCode === 201 ? { envelope_id: $json.body.id, status: $json.body.status } : $json.body) }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode === 201 ? 201 : 502 }}"
+        }
+      },
+      "id": "672d1273-06c1-567f-a928-a8cf48494f31",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "New invoice": {
+      "main": [
+        [
+          {
+            "node": "Build envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build envelope": {
+      "main": [
+        [
+          {
+            "node": "Create envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create envelope": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

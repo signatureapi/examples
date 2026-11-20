@@ -1,0 +1,22 @@
+{
+  "slipDate": "2026-11-02",
+  "school": {
+    "name": "Springfield Example School"
+  },
+  "tripName": "Science museum visit",
+  "tripDate": "2026-11-20",
+  "departureTime": "9:00",
+  "student": {
+    "name": "Sam Doe",
+    "grade": "5"
+  },
+  "guardian": {
+    "name": "Jane Doe",
+    "phone": "555-0100"
+  },
+  "hasFee": true,
+  "currency": "USD",
+  "fee": "12",
+  "feeDueDate": "2026-11-13",
+  "returnDate": "2026-11-16"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "signatureapi-example-pipedream",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI from a Pipedream Node.js code step (core tested on Node.js)",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test" }
+}

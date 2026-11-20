@@ -1,0 +1,9 @@
+{
+  "name": "signatureapi-example-apps-script",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI from Google Sheets with Apps Script (core tested on Node.js)",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test" }
+}

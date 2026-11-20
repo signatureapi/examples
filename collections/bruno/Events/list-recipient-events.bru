@@ -1,0 +1,24 @@
+meta {
+  name: List recipient events
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/v1/recipients/{{recipient_id}}/events
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~type: 
+  ~limit: 
+}
+
+docs {
+  Returns a list of events for a specific recipient. Events are sorted by timestamp, with the most recent appearing first.
+  
+  Results include only recipient events, such as delivery, signing, and bounce events. Use the `type` query parameter to filter by a specific event type.
+  
+  The response is paginated. Use the `links.next` and `links.previous` URLs to navigate between pages.
+}

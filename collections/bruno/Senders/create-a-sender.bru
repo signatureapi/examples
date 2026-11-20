@@ -1,0 +1,23 @@
+meta {
+  name: Create a sender
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/v1/senders
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "legal@acme.example"
+  }
+}
+
+docs {
+  Registers a new sender email address and starts the verification process. SignatureAPI sends a verification email to the provided address. The sender is returned with `pending_verification` status.
+  
+  Once the email owner clicks the confirmation link, the sender status changes to `verified` and can be used on envelopes. SignatureAPI sends signing requests to recipients on behalf of verified senders. Listen for the `sender.verified` or `sender.failed` webhook events to track the outcome.
+}

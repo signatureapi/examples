@@ -1,0 +1,25 @@
+meta {
+  name: Create a deliverable
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56/deliverables
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "type": "standard"
+  }
+}
+
+docs {
+  Creates a new deliverable from a completed envelope. The envelope must have a status of `completed`.
+  
+  Use this endpoint to generate additional deliverables after an envelope completes. For example, you might create a simple deliverable containing only specific documents, or a password-protected copy for secure distribution.
+  
+  The deliverable starts in `processing` status and transitions to `generated` once the PDF is ready. This usually takes a few seconds. Subscribe to the `deliverable.generated` webhook to be notified when the deliverable is available for download.
+}

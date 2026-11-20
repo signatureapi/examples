@@ -1,0 +1,17 @@
+{
+  "name": "webhooks-nextjs",
+  "version": "1.0.0",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  }
+}

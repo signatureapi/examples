@@ -1,0 +1,9 @@
+{
+  "name": "signatureapi-example-n8n",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignatureAPI n8n workflows (HTTP Request node and Header Auth), checked offline on Node.js",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test" }
+}

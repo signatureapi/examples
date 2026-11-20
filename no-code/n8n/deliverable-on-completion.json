@@ -1,0 +1,208 @@
+{
+  "name": "SignatureAPI: signed PDF on completion",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Signed PDF on completion\nSubscribe a SignatureAPI webhook endpoint to `deliverable.generated` with this webhook's production URL.\n\nThe Code node verifies the signature, then the workflow fetches the deliverable and downloads the signed PDF. Add your storage node after **Download signed PDF**.",
+        "width": 460,
+        "height": 240
+      },
+      "id": "dbf4da83-cac3-5f3c-bf40-ed595226430b",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "signatureapi-events",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "e2556581-7bd7-5c6c-a4f0-236ac4f801d4",
+      "name": "SignatureAPI event",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verifies the webhook signature (Standard Webhooks), then passes the event on.\n// Needs two environment variables on your n8n instance:\n//   SIGNATUREAPI_WEBHOOK_SECRET  the signing secret of your SignatureAPI webhook endpoint\n//   NODE_FUNCTION_ALLOW_BUILTIN=crypto  so this node can load the crypto module\nconst crypto = require('crypto');\nconst secret = $env.SIGNATUREAPI_WEBHOOK_SECRET;\nif (!secret) throw new Error('Set the SIGNATUREAPI_WEBHOOK_SECRET environment variable');\n\nconst headers = $input.first().json.headers;\nconst id = headers['webhook-id'];\nconst timestamp = headers['webhook-timestamp'];\nconst signatures = headers['webhook-signature'];\nif (!id || !timestamp || !signatures) throw new Error('Missing webhook-id, webhook-timestamp or webhook-signature');\nif (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) throw new Error('webhook-timestamp is more than 5 minutes from now');\n\n// The signature covers the raw body bytes, so read them, not the parsed JSON.\nconst raw = await this.helpers.getBinaryDataBuffer(0, 'data');\nconst key = Buffer.from(secret.slice(secret.indexOf('_') + 1), 'base64'); // the base64 part after the prefix\nconst expected = crypto.createHmac('sha256', key).update(`${id}.${timestamp}.`).update(raw).digest();\nconst valid = signatures.split(' ').some((entry) => {\n  const [version, signature] = entry.split(',');\n  if (version !== 'v1' || !signature) return false;\n  const received = Buffer.from(signature, 'base64');\n  return received.length === expected.length && crypto.timingSafeEqual(received, expected);\n});\nif (!valid) throw new Error('Invalid webhook signature');\n\nreturn [{ json: { webhook_id: id, event: JSON.parse(raw.toString('utf8')) } }];"
+      },
+      "id": "a576d5d2-1bb5-5026-b1ef-4e1cbee75519",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {
+          "responseCode": 204
+        }
+      },
+      "id": "0bb698ac-a0c9-5514-8966-120f086fbfe3",
+      "name": "Acknowledge",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "299eed03-6dcc-5670-9b1e-3fea2e199901",
+              "leftValue": "={{ $json.event.type }}",
+              "rightValue": "deliverable.generated",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "91c2b773-97a2-574e-8b33-d9c71dc10bcb",
+      "name": "Deliverable generated?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.signatureapi.com/v1/deliverables/{{ $json.event.data.object_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "ae17c36f-0fde-5133-8c38-50e5d6da537f",
+      "name": "Get deliverable",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        -20
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "signed_pdf"
+            }
+          }
+        }
+      },
+      "id": "2cee01d5-8207-5592-96e5-87c92ae44795",
+      "name": "Download signed PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        -20
+      ]
+    }
+  ],
+  "connections": {
+    "SignatureAPI event": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge": {
+      "main": [
+        [
+          {
+            "node": "Deliverable generated?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deliverable generated?": {
+      "main": [
+        [
+          {
+            "node": "Get deliverable",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Get deliverable": {
+      "main": [
+        [
+          {
+            "node": "Download signed PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

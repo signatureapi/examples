@@ -1,0 +1,15 @@
+meta {
+  name: Delete a sender
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{base_url}}/v1/senders/{{sender_id}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  Deletes a sender. Once deleted, this email address can no longer be used on new envelopes. Envelopes already sent with this sender are not affected.
+}

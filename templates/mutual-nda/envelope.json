@@ -1,0 +1,34 @@
+{
+  "title": "Mutual NDA (sample)",
+  "message": "Please review and sign. This is a sample in test mode.",
+  "document": {
+    "key": "main",
+    "filename": "template.docx"
+  },
+  "recipients": [
+    {
+      "type": "signer",
+      "key": "party_a",
+      "name": "Alex Chen",
+      "email": "alex.chen@example.com"
+    },
+    {
+      "type": "signer",
+      "key": "party_b",
+      "name": "John Smith",
+      "email": "john.smith@example.com"
+    }
+  ],
+  "places": [
+    {
+      "key": "party_a_signs_here",
+      "type": "signature",
+      "recipient_key": "party_a"
+    },
+    {
+      "key": "party_b_signs_here",
+      "type": "signature",
+      "recipient_key": "party_b"
+    }
+  ]
+}

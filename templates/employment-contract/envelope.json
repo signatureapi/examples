@@ -1,0 +1,34 @@
+{
+  "title": "Employment Contract (sample)",
+  "message": "Please review and sign. This is a sample in test mode.",
+  "document": {
+    "key": "main",
+    "filename": "template.docx"
+  },
+  "recipients": [
+    {
+      "type": "signer",
+      "key": "employer",
+      "name": "Alex Chen",
+      "email": "alex.chen@example.com"
+    },
+    {
+      "type": "signer",
+      "key": "employee",
+      "name": "Maria Garcia",
+      "email": "maria.garcia@example.com"
+    }
+  ],
+  "places": [
+    {
+      "key": "employer_signs_here",
+      "type": "signature",
+      "recipient_key": "employer"
+    },
+    {
+      "key": "employee_signs_here",
+      "type": "signature",
+      "recipient_key": "employee"
+    }
+  ]
+}

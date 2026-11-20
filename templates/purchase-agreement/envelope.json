@@ -1,0 +1,34 @@
+{
+  "title": "Purchase Agreement (sample)",
+  "message": "Please review and sign. This is a sample in test mode.",
+  "document": {
+    "key": "main",
+    "filename": "template.docx"
+  },
+  "recipients": [
+    {
+      "type": "signer",
+      "key": "seller",
+      "name": "Alex Chen",
+      "email": "alex.chen@example.com"
+    },
+    {
+      "type": "signer",
+      "key": "buyer",
+      "name": "John Smith",
+      "email": "john.smith@example.com"
+    }
+  ],
+  "places": [
+    {
+      "key": "seller_signs_here",
+      "type": "signature",
+      "recipient_key": "seller"
+    },
+    {
+      "key": "buyer_signs_here",
+      "type": "signature",
+      "recipient_key": "buyer"
+    }
+  ]
+}

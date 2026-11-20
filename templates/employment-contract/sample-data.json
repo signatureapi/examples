@@ -1,0 +1,23 @@
+{
+  "city": "Springfield",
+  "contractDate": "2026-11-02",
+  "employer": {
+    "name": "Acme Corp",
+    "signatory": "Alex Chen",
+    "signatoryTitle": "Head of Operations",
+    "address": "100 Example Street, Springfield"
+  },
+  "employee": {
+    "name": "Maria Garcia",
+    "address": "12 Sample Lane, Springfield"
+  },
+  "startDate": "2026-12-01",
+  "jobTitle": "Customer Success Manager",
+  "hasProbation": true,
+  "probationMonths": "3",
+  "weeklyHours": "40",
+  "currency": "USD",
+  "salary": "72,000",
+  "vacationDays": "25",
+  "governingLaw": "the State of Delaware"
+}

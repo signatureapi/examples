@@ -1,0 +1,118 @@
+name: Nightly examples
+
+# Runs every example folder's tests. Offline tests always run. Live tests run against
+# SignatureAPI test mode when the SIGNATUREAPI_TEST_API_KEY secret is set, and skip without it.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: examples-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.folder }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        folder:
+          - scripts/node
+          - scripts/python
+          - scripts/upload-first
+          - scripts/php
+          - scripts/ruby
+          - scripts/go
+          - scripts/java
+          - scripts/csharp
+          - verify-webhooks/node
+          - verify-webhooks/python
+          - verify-webhooks/php
+          - verify-webhooks/ruby
+          - verify-webhooks/go
+          - verify-webhooks/java
+          - verify-webhooks/csharp
+          - webhooks/express
+          - webhooks/nextjs
+          - webhooks/fastapi
+          - webhooks/django
+          - webhooks/laravel
+          - webhooks/rails
+          - webhooks/spring
+          - webhooks/aspnet
+          - tutorials/node
+          - tutorials/python-flask
+          - tutorials/python-django
+          - tutorials/php-laravel
+          - tutorials/rails
+          - tutorials/go
+          - tutorials/java-spring
+          - tutorials/dotnet
+          - templates
+          - collections
+          - no-code/apps-script
+          - no-code/airtable
+          - no-code/pipedream
+          - no-code/n8n
+          - use-cases/agencies-sow
+          - use-cases/automotive
+          - use-cases/construction-change-orders
+          - use-cases/education-enrollment
+          - use-cases/fintech-account-opening
+          - use-cases/healthcare-consent
+          - use-cases/hr-offer-letters
+          - use-cases/insurance
+          - use-cases/law-firm-engagement
+          - use-cases/lending
+          - use-cases/logistics-drivers
+          - use-cases/marketplace-providers
+          - use-cases/nonprofit-volunteers
+          - use-cases/property-management-leases
+          - use-cases/public-sector
+          - use-cases/real-estate
+          - use-cases/saas-order-forms
+          - use-cases/staffing-onboarding
+          - use-cases/telecom
+    env:
+      # Only scheduled and manual runs on this repository get the key; pull requests run offline.
+      SIGNATUREAPI_KEY: ${{ github.event_name != 'pull_request' && secrets.SIGNATUREAPI_TEST_API_KEY || '' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Run tests
+        run: bash .github/scripts/run-folder.sh "${{ matrix.folder }}"
+
+  collections-drift:
+    name: collections match the published OpenAPI spec
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Fetch the spec and convert it to JSON
+        working-directory: collections
+        run: |
+          python3 -m pip install --quiet pyyaml==6.0.3
+          curl -sSfo openapi.yaml https://spec.signatureapi.com/openapi.yaml
+          python3 -c "import json, yaml; json.dump(yaml.safe_load(open('openapi.yaml')), open('openapi.json', 'w'))"
+      - name: Check operations, bodies and drift
+        working-directory: collections
+        run: OPENAPI_BUNDLE=openapi.json node --test

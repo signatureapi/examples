@@ -1,0 +1,19 @@
+meta {
+  name: Delete an envelope
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56
+  body: none
+  auth: inherit
+}
+
+docs {
+  Permanently deletes an envelope. The envelope immediately becomes inaccessible through the API.
+  
+  Only envelopes with status `canceled`, `completed`, or `failed` can be deleted. To delete an envelope that is `processing` or `in_progress`, cancel it first using the Cancel Envelope endpoint.
+  
+  Deleted envelopes can be recovered via a support request within 14 days. After 14 days, the data is permanently removed.
+}

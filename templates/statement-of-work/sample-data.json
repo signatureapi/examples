@@ -1,0 +1,41 @@
+{
+  "sowDate": "2026-11-02",
+  "msaDate": "2026-10-15",
+  "provider": {
+    "name": "Acme Corp",
+    "signatory": "Alex Chen",
+    "signatoryTitle": "Head of Operations",
+    "address": "100 Example Street, Springfield"
+  },
+  "client": {
+    "name": "Globex Example Ltd",
+    "signatory": "Jane Doe"
+  },
+  "projectName": "Customer portal",
+  "projectSummary": "design and build a customer portal for order tracking",
+  "lineItems": [
+    {
+      "description": "Discovery workshop",
+      "quantity": "1",
+      "unitPrice": "2,000",
+      "amount": "2,000"
+    },
+    {
+      "description": "Interface design",
+      "quantity": "40 hours",
+      "unitPrice": "100",
+      "amount": "4,000"
+    },
+    {
+      "description": "Front-end build",
+      "quantity": "80 hours",
+      "unitPrice": "110",
+      "amount": "8,800"
+    }
+  ],
+  "currency": "USD",
+  "total": "14,800",
+  "billingTerms": "50 percent at the start and 50 percent on delivery",
+  "startDate": "2026-12-01",
+  "endDate": "2027-02-26"
+}

@@ -1,0 +1,173 @@
+{
+  "name": "SignatureAPI: store templates",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Store templates\nRun once. Downloads each DOCX template, uploads it to SignatureAPI and stores it permanently.\n\nCopy each `url` from the last node's output into the workflows that use the template.",
+        "width": 420,
+        "height": 200
+      },
+      "id": "9b3c4e05-a2d1-5535-be19-472f183a7108",
+      "name": "About",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -260
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "ee52fe3f-9767-5c04-b0bf-dae5668d38ea",
+      "name": "Run once",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The DOCX templates to store in your SignatureAPI account, one item each.\n// source_url: where n8n downloads the file from. key: the unique name it gets in your account.\n// Replace these with your own templates.\nconst base = 'https://signatureapi.com/docs/samples/templates';\nreturn [\n  { json: { key: 'employment-contract', source_url: `${base}/employment-contract.docx` } },\n  { json: { key: 'mutual-nda', source_url: `${base}/mutual-nda.docx` } },\n  { json: { key: 'residential-lease', source_url: `${base}/residential-lease.docx` } },\n];"
+      },
+      "id": "cba69f93-5dc1-5a64-888e-4c86168ba2ae",
+      "name": "Templates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.source_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "8729e468-7eba-5141-9674-e6e530e2ac32",
+      "name": "Download template",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.signatureapi.com/v1/uploads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data"
+      },
+      "id": "852b50bc-f3e5-549c-9613-8c8f3ee8c6a7",
+      "name": "Create upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.signatureapi.com/v1/uploads/{{ $json.id }}/store",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ key: $('Templates').item.json.key }) }}",
+        "options": {}
+      },
+      "id": "cabf5813-fef8-55d6-bbf7-139de9ab0bb2",
+      "name": "Store upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "SignatureAPI test key"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Run once": {
+      "main": [
+        [
+          {
+            "node": "Templates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Templates": {
+      "main": [
+        [
+          {
+            "node": "Download template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download template": {
+      "main": [
+        [
+          {
+            "node": "Create upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create upload": {
+      "main": [
+        [
+          {
+            "node": "Store upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

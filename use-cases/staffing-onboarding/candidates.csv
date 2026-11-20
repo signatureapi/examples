@@ -1,0 +1,4 @@
+record_id,candidate_name,email,role,start_date
+cand_2001,Jane Doe,jane.doe@example.com,Warehouse Associate,2027-01-11
+cand_2002,John Smith,john.smith@example.com,Forklift Operator,2027-01-18
+cand_2003,Maria Garcia,maria.garcia@example.com,Dispatcher,2027-01-25

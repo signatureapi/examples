@@ -1,0 +1,9 @@
+{
+  "name": "signatureapi-upload-first",
+  "private": true,
+  "type": "module",
+  "description": "Upload a local PDF or DOCX to SignatureAPI, then send it for signature.",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node send-local-file.mjs", "test": "node --test" },
+  "license": "MIT"
+}

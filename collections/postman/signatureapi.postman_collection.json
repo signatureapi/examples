@@ -1,0 +1,692 @@
+{
+  "info": {
+    "name": "SignatureAPI",
+    "description": "SignatureAPI public API, generated from the OpenAPI spec. Docs: https://signatureapi.com/docs/api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.signatureapi.com"
+    }
+  ],
+  "item": [
+    {
+      "name": "Envelopes",
+      "item": [
+        {
+          "name": "List envelopes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter by envelope status.",
+                  "disabled": true
+                },
+                {
+                  "key": "topic",
+                  "value": "",
+                  "description": "Filter by envelope topic.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "The maximum number of objects to return in the response.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns a paginated list of envelopes in the current account, sorted by creation date with the most recent envelopes first.\n\nUse the `status` parameter to filter by envelope status (e.g., `completed`, `in_progress`). Use the `topic` parameter to filter by a specific topic tag.\n\nResults are paginated with a default and maximum limit of 20 envelopes per page. Use the `links.next` and `links.previous` URLs in the response to navigate between pages."
+          }
+        },
+        {
+          "name": "Create an envelope",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes"
+              ]
+            },
+            "description": "Creates a new envelope and starts the signing process. The envelope begins in `processing` status while documents are validated and prepared, then transitions to `in_progress` once recipients are notified.\n\nAt minimum, you must provide a `title`, at least one `document`, and at least one `recipient`. All other fields are optional and have sensible defaults.\n\nDocuments must be publicly accessible PDF or DOCX files. Each document can include interactive elements (places) such as signature fields, text inputs, and checkboxes.\n\nBy default, recipients receive the envelope sequentially in the order listed. Set `routing` to `parallel` to send to all recipients at the same time.\n\nA `standard` deliverable (signed documents plus audit log) is generated automatically upon completion. You can customize the deliverable type, password-protect it, or select which documents to include.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Service Agreement\",\n  \"message\": \"Hi, please review and sign the Acme Corp Service Agreement.\",\n  \"metadata\": {\n    \"customer_ref\": \"ACME-1001\"\n  },\n  \"documents\": [\n    {\n      \"url\": \"https://pub-9cb75390636c4a8a83a6f76da33d7f45.r2.dev/docs-samples/service-agreement.pdf\",\n      \"format\": \"pdf\",\n      \"places\": [\n        {\n          \"key\": \"client_signature\",\n          \"type\": \"signature\",\n          \"recipient_key\": \"client\"\n        }\n      ],\n      \"fixed_positions\": [\n        {\n          \"place_key\": \"client_signature\",\n          \"page\": 1,\n          \"top\": 172,\n          \"left\": 210\n        }\n      ]\n    }\n  ],\n  \"recipients\": [\n    {\n      \"key\": \"client\",\n      \"type\": \"signer\",\n      \"name\": \"Jane Doe\",\n      \"email\": \"jane.doe@example.com\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete an envelope",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes",
+                "eb4cf433-a8af-4161-b37b-7ef57d423e56"
+              ]
+            },
+            "description": "Permanently deletes an envelope. The envelope immediately becomes inaccessible through the API.\n\nOnly envelopes with status `canceled`, `completed`, or `failed` can be deleted. To delete an envelope that is `processing` or `in_progress`, cancel it first using the Cancel Envelope endpoint.\n\nDeleted envelopes can be recovered via a support request within 14 days. After 14 days, the data is permanently removed."
+          }
+        },
+        {
+          "name": "Retrieve an envelope",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes",
+                "eb4cf433-a8af-4161-b37b-7ef57d423e56"
+              ]
+            },
+            "description": "Retrieves the full details of an envelope, including its documents, recipients, deliverable, sender information, and captures.\n\nUse this endpoint to check the current status of an envelope, retrieve recipient ceremony URLs, or access the deliverable download URL after completion.\n\nThe response includes all envelope properties regardless of the envelope's current status. Fields that are not yet available (such as `completed_at` for an in-progress envelope) are returned as `null`."
+          }
+        },
+        {
+          "name": "Update an envelope",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes",
+                "eb4cf433-a8af-4161-b37b-7ef57d423e56"
+              ]
+            },
+            "description": "Updates an envelope by setting the values of the parameters passed. Any parameters not provided are left unchanged.\n\nCurrently, only the `label` parameter can be updated. The label is for internal use only and is not shown to recipients. You can update the label regardless of the envelope's status.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Acme Corp renewal 2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Cancel an envelope",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56/cancel",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes",
+                "eb4cf433-a8af-4161-b37b-7ef57d423e56",
+                "cancel"
+              ]
+            },
+            "description": "Cancels an envelope, immediately halting all signing activity. This action is irreversible and permanent.\n\nOnly envelopes with status `in_progress` can be canceled. Once canceled, the envelope's status changes to `canceled` and recipients can no longer access the signing ceremony.\n\nAn optional `reason` can be provided for internal tracking. The reason is included in the `envelope.canceled` webhook event but is not shown to recipients.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Superseded by a new version of the agreement\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipients",
+      "item": [
+        {
+          "name": "Retrieve a recipient",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/recipients/{{recipient_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "recipients",
+                "{{recipient_id}}"
+              ]
+            },
+            "description": "Retrieves the details of a recipient, including their current status, ceremony information, and completion timestamp.\n\nUse this endpoint to check a recipient's progress through the signing workflow. The response includes the full recipient object with all properties for the recipient's type (signer, approver, or preparer)."
+          }
+        },
+        {
+          "name": "Create ceremony for recipient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/recipients/{{recipient_id}}/ceremonies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "recipients",
+                "{{recipient_id}}",
+                "ceremonies"
+              ]
+            },
+            "description": "Creates a new ceremony for the recipient. Any previous active ceremony for this recipient is automatically revoked.\n\nUse this endpoint to create a ceremony after the envelope has been created, or to replace an existing ceremony with different authentication settings.\n\nThe response includes the ceremony configuration and, when applicable, the ceremony URL. The **first** authentication method decides this: the `url` property is populated when the first method is `email_code` or `custom`. When the first method is `email_link`, SignatureAPI delivers the URL by email and the `url` property is `null`, including when another method such as `email_code` follows it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"authentication\": [\n    {\n      \"type\": \"email_code\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Replace a recipient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/recipients/{{recipient_id}}/replace",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "recipients",
+                "{{recipient_id}}",
+                "replace"
+              ]
+            },
+            "description": "Replaces a recipient with a new person. The original recipient's status changes to `replaced`, and a new recipient is created with the provided name and email.\n\nUse this when a recipient can no longer complete the envelope, for example, after a hard bounce or if the wrong person was assigned.\n\nRecipients can be replaced as long as they have not completed yet and the envelope status is `processing` or `in_progress`. The new recipient inherits the original recipient's type, key, routing position, and assigned places.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Resend Request To Recipient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/recipients/{{recipient_id}}/resend",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "recipients",
+                "{{recipient_id}}",
+                "resend"
+              ]
+            },
+            "description": "Resends the invitation email to a recipient who has not yet completed the envelope.\n\nThe request can be resent when the recipient status is `sent` or `soft_bounced` and the envelope status is `in_progress`.\n\nThe response includes a `can_resend_at` timestamp that indicates when the next resend is allowed. You must wait until after this time before resending again.\n\nYou can optionally customize the email subject and message for this specific resend. If not provided, the original subject and message are used.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject_override\": \"Reminder: please sign the Service Agreement\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deliverables",
+      "item": [
+        {
+          "name": "Retrieve a deliverable",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/deliverables/{{deliverable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "deliverables",
+                "{{deliverable_id}}"
+              ]
+            },
+            "description": "Retrieves the details of a deliverable, including its current status and download URL.\n\nWhen the deliverable status is `generated`, the response includes a `url` field with a download link. By default, this is a pre-signed URL that expires after 1 hour. Call this endpoint again to get a fresh URL if the previous one has expired."
+          }
+        },
+        {
+          "name": "List deliverables",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56/deliverables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes",
+                "eb4cf433-a8af-4161-b37b-7ef57d423e56",
+                "deliverables"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "The maximum number of objects to return in the response.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns a list of deliverables for an envelope. Each envelope has at least one deliverable created automatically when the envelope completes. Additional deliverables may exist if created via the Create Deliverable endpoint.\n\nThe deliverables are sorted chronologically by creation date, with the earliest created deliverable appearing first."
+          }
+        },
+        {
+          "name": "Create a deliverable",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56/deliverables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes",
+                "eb4cf433-a8af-4161-b37b-7ef57d423e56",
+                "deliverables"
+              ]
+            },
+            "description": "Creates a new deliverable from a completed envelope. The envelope must have a status of `completed`.\n\nUse this endpoint to generate additional deliverables after an envelope completes. For example, you might create a simple deliverable containing only specific documents, or a password-protected copy for secure distribution.\n\nThe deliverable starts in `processing` status and transitions to `generated` once the PDF is ready. This usually takes a few seconds. Subscribe to the `deliverable.generated` webhook to be notified when the deliverable is available for download.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"standard\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "List envelope events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/envelopes/eb4cf433-a8af-4161-b37b-7ef57d423e56/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "envelopes",
+                "eb4cf433-a8af-4161-b37b-7ef57d423e56",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "Filter by event type.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "The maximum number of objects to return in the response.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns a list of events for a specific envelope. Events are sorted by timestamp, with the most recent appearing first.\n\nResults include envelope events, recipient events, and deliverable events associated with this envelope. Use the `type` query parameter to filter by a specific event type.\n\nThe response is paginated. Use the `links.next` and `links.previous` URLs to navigate between pages."
+          }
+        },
+        {
+          "name": "List all events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "Filter by event type.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "The maximum number of objects to return in the response.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns a list of all events across your account. Events are sorted by timestamp, with the most recent appearing first.\n\nResults include envelope, recipient, deliverable, and sender events. Use the `type` query parameter to filter by a specific event type.\n\nThe response is paginated. Use the `links.next` and `links.previous` URLs to navigate between pages."
+          }
+        },
+        {
+          "name": "List recipient events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/recipients/{{recipient_id}}/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "recipients",
+                "{{recipient_id}}",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "Filter by event type.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "The maximum number of objects to return in the response.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns a list of events for a specific recipient. Events are sorted by timestamp, with the most recent appearing first.\n\nResults include only recipient events, such as delivery, signing, and bounce events. Use the `type` query parameter to filter by a specific event type.\n\nThe response is paginated. Use the `links.next` and `links.previous` URLs to navigate between pages."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Create an Upload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/pdf"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/uploads",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "uploads"
+              ]
+            },
+            "description": "Uploads a file to SignatureAPI for use as a document source in an envelope.\n\nThe upload is **temporary** and automatically deleted after **24 hours**. Send the raw file bytes in the request body with the appropriate `Content-Type` header. Maximum file size: **4.5 MB**.\n\nThe response includes a `url` field that can be used anywhere a file URL is accepted, such as in the `document.url` field when adding documents to an envelope.\n\nTo store a **permanent file** that can be reused, use the [Store Upload](/docs/v1/store-upload) endpoint or the file library in your dashboard.\n\n**Accepted media types:**\n\n| Media Type                                                                | Format |\n|---------------------------------------------------------------------------|--------|\n| `application/pdf`                                                         | `pdf`  |\n| `application/vnd.openxmlformats-officedocument.wordprocessingml.document` | `docx` |\n| `image/png`                                                               | `png`  |",
+            "body": {
+              "mode": "file",
+              "file": {}
+            }
+          }
+        },
+        {
+          "name": "Retrieve an upload",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/uploads/{{upload_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "uploads",
+                "{{upload_id}}"
+              ]
+            },
+            "description": "Retrieves the metadata of an existing upload. Returns details such as the file format, size, SHA-256 hash, and retention type.\n\nThis endpoint returns upload metadata only. The file content cannot be downloaded through the API."
+          }
+        },
+        {
+          "name": "Store an upload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/uploads/{{upload_id}}/store",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "uploads",
+                "{{upload_id}}",
+                "store"
+              ]
+            },
+            "description": "Converts a temporary upload into a permanent upload. The file is moved to permanent storage and will no longer expire. A unique `key` is required to identify the permanent upload.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"service-agreement-v1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Senders",
+      "item": [
+        {
+          "name": "Create a sender",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/senders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "senders"
+              ]
+            },
+            "description": "Registers a new sender email address and starts the verification process. SignatureAPI sends a verification email to the provided address. The sender is returned with `pending_verification` status.\n\nOnce the email owner clicks the confirmation link, the sender status changes to `verified` and can be used on envelopes. SignatureAPI sends signing requests to recipients on behalf of verified senders. Listen for the `sender.verified` or `sender.failed` webhook events to track the outcome.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"legal@acme.example\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete a sender",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/senders/{{sender_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "senders",
+                "{{sender_id}}"
+              ]
+            },
+            "description": "Deletes a sender. Once deleted, this email address can no longer be used on new envelopes. Envelopes already sent with this sender are not affected."
+          }
+        },
+        {
+          "name": "Retrieve a Sender",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/senders/{{sender_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "senders",
+                "{{sender_id}}"
+              ]
+            },
+            "description": "Retrieves the details of a sender. Use this endpoint to check the current verification status of a sender after creation."
+          }
+        }
+      ]
+    }
+  ]
+}
